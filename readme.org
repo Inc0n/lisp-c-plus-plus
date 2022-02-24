@@ -1,0 +1,4 @@
+
+My toy and learning project on Lisp in C++, see the sister project [[https://github.com/Inc0n/lispc][lisp in c]].
+
+C++ has a lot more higher level construct baked in, making it easier to implement the register machines. Which is the main reason why this project is created in place of its sister project, the slightly "limiting" c programming language.
