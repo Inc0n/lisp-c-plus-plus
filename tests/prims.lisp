@@ -1,0 +1,1 @@
+(eq (car (list t nil)) t)
