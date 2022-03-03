@@ -75,8 +75,12 @@ void Cell::mark() {
     if (is_pair(this)) {
         this->car()->mark();
         this->cdr()->mark();
-    } else if (is_procedure(this)) {
-        this->as_procedure->env
+    }
+    else if (is_procedure(this)) {
+        Procedure *proc = this->as_procedure();
+        proc->param->mark();
+        proc->body->mark();
+        proc->env->mark();
     }
 }
 
@@ -225,7 +229,7 @@ Cell *assoc(Cell *sym, Cell *alist) {
         /* debuglog("env_lookup_var: %p, %d, %s\n", */
         /*          car(pair), ((Cell*)car(pair))->type, var->val); */
         /* print_expr(pair); */
-        if (eq((Cell*)car(pair), sym)) {
+        if (car(pair) == sym) {
             return pair;
         }
     }

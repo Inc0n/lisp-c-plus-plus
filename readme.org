@@ -1,4 +1,16 @@
 
+* Description
 My toy and learning project on Lisp in C++, see the sister project [[https://github.com/Inc0n/lispc][lisp in c]].
 
+** Why C++ from C
 C++ has a lot more higher level construct baked in, making it easier to implement the register machines. Which is the main reason why this project is created in place of its sister project, the slightly "limiting" c programming language.
+
+* Project Goal
+- Explorer the different computer architecture, stacked based, register based, etc.
+  Document their difference in combination to literature studies
+- Explore and understand the implementation of high level abstraction (Cons cells) from numerical computation
+
+* TODOs
+** TODO Verification that the GC garbage collect all loose Cells
+** TODO verification of correction of register machine implementation
+

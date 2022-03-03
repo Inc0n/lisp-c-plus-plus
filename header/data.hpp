@@ -30,18 +30,18 @@ using namespace std;
 #define debuglnObj(cell)
 #endif
 
+extern std::string Backtrace(int skip = 1);
+#define error(msg, ...) ({                      \
+            cout << Backtrace();                \
+            printf(msg, __VA_ARGS__);           \
+            exit(1);                            \
+        });
+    
 #define ensure(exp, thetype) ({                                         \
             if (exp->type != thetype) {                                 \
                 return_error("%s is not of type %d", #exp, thetype);    \
             }})
 
-extern std::string Backtrace(int skip = 1);
-#define error(msg, ...) ({                       \
-            cout << Backtrace();                 \
-            printf(msg, __VA_ARGS__);            \
-            exit(1);                             \
-        });
-    
 enum LispType {
     TypeUnknown, // 0
     //
@@ -92,21 +92,30 @@ public:
         error("CDR used on non pair cell, %d", type);
     }
 
+    // void set_car(Cell *val) { this->val = val; }
+    void set_cdr(Cell *val) { this->next = val; }
+
     void mark();
     void free_cell();
     int count_obj();
 
     friend ostream& operator<<(ostream &out, Cell *exp);
-
-    void set_car(Cell *val) { this->val = val; }
-    void set_cdr(Cell *val) { this->next = val; }
     
-    string& as_string() { return *(string*)(this->val); }
-    const char* as_char_str() { return (const char*)(this->val); }
-    Procedure* as_procedure() { return (Procedure *)(this->val); }
+    string as_string() {
+        if (type == TypeString || type == TypeSymbol)
+            return string((char*)(this->val));
+        error("trying to access type %d as string", type);
+    }
+    // const char* as_char_str() { return (const char*)(this->val); }
     // List& as_list() { return ( *)(this->val); }
-#define CONVERT_AS(type)                                                \
-    type as_ ## type () { return *reinterpret_cast<type*>(&this->val); }
+#define DEF_CONVERTER(name, type)                                   \
+    type name () { return *reinterpret_cast<type*>(&this->val); }
+
+    DEF_CONVERTER(as_char_str, char*)
+    DEF_CONVERTER(as_procedure, Procedure*)
+    DEF_CONVERTER(as_cell, Cell*)
+    
+#define CONVERT_AS(type) DEF_CONVERTER(as_ ## type, type)
 
     CONVERT_AS(int)
     CONVERT_AS(float)
@@ -162,9 +171,10 @@ VM *getVM(void);
 #define lisp_true intern("t")
 #define is_bool(x) (null(x) || (x) == lisp_true)
 
-#define eq(x, y) ((x) == (y))
-#define falsep(x) (null(x))
+// #define falsep(x) (null(x))
 #define to_lisp_bool(x) ((x) ? lisp_true : nil())
+#define from_lisp_bool(x) (x == lisp_true ? true : false)
+
 #define intern(x) (getVM()->getSymbol(x))
 // Cell *intern(const char *sym);
 
